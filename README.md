@@ -15,7 +15,7 @@ Y_range = (1, 5)  # 5 did not occur in the sample Y yet
 # theoretic metrics such as entropy, conditional entropy, self-information
 # (also known as information content or surprisal). Joint and marginal
 # probability mass functions and contingency tables are also included for
-# convenience.
+# convenience. Note the example output is computed using 1000 samples.
 
 everything = {
  'N': 1000,
