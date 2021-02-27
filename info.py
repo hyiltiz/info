@@ -122,8 +122,8 @@ def compute(X: list, Y: list, domain: list):
                'XY': cXY,
            'p': {
                'X': pX,
-               'Y': pY}
-               'XY': pXY,
+               'Y': pY,
+               'XY': pXY},
            }
 
     # print(f"====\nmutual_XY:{mutual_XY}, "
@@ -134,8 +134,8 @@ def compute(X: list, Y: list, domain: list):
     return (mutual_XY, mutual_XY/HX, out)
 
 def kl_div(p, q):
-    "Compute KL divergence, the information gain if p was used as an
-    approximation for q (also known as the relative entropy of p w.r.t. q)."
+    """Compute KL divergence, the information gain if p was used as an
+    approximation for q (also known as the relative entropy of p w.r.t. q)."""
 
     nonzeros = p != 0
     kl = sum(p[nonzero] * (math.log2(p[nonzero]) - math.log2(q[nonzero])))
