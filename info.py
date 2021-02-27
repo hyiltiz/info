@@ -8,7 +8,7 @@ __license__ = "GNU GPL version 3 or later"
 __version__ = "0.9"
 
 from itertools import product
-imoprt math
+import math
 import numpy as np
 
 # TODO: add `hypothesis` property tests for mutual information and entropy
