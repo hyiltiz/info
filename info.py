@@ -8,7 +8,6 @@ __license__ = "GNU GPL version 3 or later"
 __version__ = "0.9"
 
 from itertools import product
-import math
 import numpy as np
 
 # TODO: add `hypothesis` property tests for mutual information and entropy
@@ -94,8 +93,8 @@ def compute(X: list, Y: list, domain: list):
                    pXY[nonzeros]/pX[nonzeros])),
                'Y-given-X': -sum(pXY[nonzeros] * np.log2(
                    pXY[nonzeros]/pY[nonzeros])),
-               'Y-approximates-X': kl(Y, X),
-               'X-approximates-Y': kl(X, Y),
+               'Y-approximates-X': kl_div(Y, X),
+               'X-approximates-Y': kl_div(X, Y),
                # TODO: better name; check if matrix <> vectors is correct
                'conditional-fallacy-mistook-as-given-B': EI(pXY/pY, pX/pY),
                'conditional-fallacy-mistook-as-given-B': EI(pXY/pX, pY/pX)},
@@ -138,13 +137,13 @@ def kl_div(p, q):
     approximation for q (also known as the relative entropy of p w.r.t. q)."""
 
     nonzeros = p != 0
-    kl = sum(p[nonzero] * (math.log2(p[nonzero]) - math.log2(q[nonzero])))
+    kl = sum(p[nonzeros] * (np.log2(p[nonzeros]) - np.log2(q[nonzeros])))
     return kl
 
 def EI(w, p):
     "Compute the expected information of p using weights w."
     nonzeros = w != 0
-    e_info = sum(w[nonzero] * math.log2(p[nonzero]))
+    e_info = sum(w[nonzeros] * np.log2(p[nonzeros]))
     return e_info
 
 def main():
@@ -170,6 +169,7 @@ def main():
 
     [mi_X_Y, normalized, info] = compute(X, Y, domain)
     print(mi_X_Y)
+    import ipdb; ipdb.set_trace() # BREAKPOIN for debugging
 
 if __name__ == '__main__':
     main()
