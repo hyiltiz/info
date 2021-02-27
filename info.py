@@ -8,6 +8,7 @@ __license__ = "GNU GPL version 3 or later"
 __version__ = "0.9"
 
 from itertools import product
+imoprt math
 import numpy as np
 
 # TODO: add `hypothesis` property tests for mutual information and entropy
@@ -22,11 +23,13 @@ def compute(X: list, Y: list, domain: list):
       - a nested dictionary that contains other normalized variants of mutual
         information, as well as some commonly used information theoretic
         metrics such as entropy, conditional entropy, self-information (also
-        known as information content or surprisal). Joint and marginal
+        known as information content or surprisal), relative entropy (also
+        known as KL-divergence or information gain). Joint and marginal
         probability mass functions and contingency tables are also included for
         convenience.
 
     Copyright (C) Hörmet Yiltiz <hyiltiz@gmail.com>, 2021.
+
     """
     # TODO generalize for N variables; currently it assumes the X and Y are in
     # the same encoding/dictionary/domain generalize the input arguments s.t.
@@ -90,7 +93,12 @@ def compute(X: list, Y: list, domain: list):
                'X-given-Y': -sum(pXY[nonzeros] * np.log2(
                    pXY[nonzeros]/pX[nonzeros])),
                'Y-given-X': -sum(pXY[nonzeros] * np.log2(
-                   pXY[nonzeros]/pY[nonzeros]))},
+                   pXY[nonzeros]/pY[nonzeros])),
+               'Y-approximates-X': kl(Y, X),
+               'X-approximates-Y': kl(X, Y),
+               # TODO: better name; check if matrix <> vectors is correct
+               'conditional-fallacy-mistook-as-given-B': EI(pXY/pY, pX/pY),
+               'conditional-fallacy-mistook-as-given-B': EI(pXY/pX, pY/pX)},
            'mutual-information': {
                'standard': mutual_XY,  # non-negative
                # normalize by entropy (asymmetric), ranges from [0, 1]
@@ -124,6 +132,20 @@ def compute(X: list, Y: list, domain: list):
     # import ipdb; ipdb.set_trace() # BREAKPOIN for debugging
 
     return (mutual_XY, mutual_XY/HX, out)
+
+def kl_div(p, q):
+    "Compute KL divergence, the information gain if p was used as an
+    approximation for q (also known as the relative entropy of p w.r.t. q)."
+
+    nonzeros = p != 0
+    kl = sum(p[nonzero] * (math.log2(p[nonzero]) - math.log2(q[nonzero])))
+    return kl
+
+def EI(w, p):
+    "Compute the expected information of p using weights w."
+    nonzeros = w != 0
+    e_info = sum(w[nonzero] * math.log2(p[nonzero]))
+    return e_info
 
 def main():
     # example function call

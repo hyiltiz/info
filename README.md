@@ -10,12 +10,14 @@ Y_range = (1, 5)  # 5 did not occur in the sample Y yet
 
 [mi_XY, mi_XY_normalized, everything] = compute_mutual_information(X, Y, [X_range, Y_range])
 
-# `everything` is a nested dictionary that contains other normalized
-# variants of mutual information, as well as some commonly used information
-# theoretic metrics such as entropy, conditional entropy, self-information
-# (also known as information content or surprisal). Joint and marginal
-# probability mass functions and contingency tables are also included for
-# convenience. Note the example output is computed using 1000 samples.
+# `everything` is a nested dictionary that contains other normalized variants
+# of mutual information, as well as some commonly used information theoretic
+# metrics such as entropy, conditional entropy, self-information (also known as
+# information content or surprisal). known as information content or
+# surprisal), relative entropy (also known as KL-divergence or information
+# gain). Joint and marginal probability mass functions and contingency tables
+# are also included for convenience. Note the example output is computed using
+# 1000 samples.
 
 everything = {
  'N': 1000,
