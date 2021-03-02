@@ -8,9 +8,71 @@ __license__ = "GNU GPL version 3 or later"
 __version__ = "0.9"
 
 from itertools import product
+from functools import reduce
 import numpy as np
 
 # TODO: add `hypothesis` property tests for mutual information and entropy
+
+
+# TODO when generalized_compute([X,Y]) == compute(X,Y), rename generalized_compute() to compute(), and merge branch with main
+def generalized_compute(variables: list, domains: list):
+    """
+    Computes the mutual information between N=len(variables) random variables,
+    as defined by:
+        sum pXYZ... log(pXYZ.../(pX pY Returns a tuple that contains:
+
+    Returns a tuple that contains:
+    - mutual information
+    - mutual information normalized by the entropy of X (useful if X is
+    signal)
+    - a nested dictionary that contains other normalized variants of mutual
+    information, as well as some commonly used information theoretic
+    metrics such as entropy, conditional entropy, self-information (also
+    known as information content or surprisal), relative entropy (also
+    known as KL-divergence or information gain). Joint and marginal
+    probability mass functions and contingency tables are also included for
+    convenience.pZ...))
+    """
+
+
+    observed = list(zip(*variables))
+    N = len(observed)
+
+
+    # NOTE: range() upper range is larger by 1
+    grid = product(*[range(d[0], d[1]+1 for d in domains)])
+
+
+    # compute the joint frequency table
+    observed_counts = [observed.count(coord) for coord in grid]
+    # TODO what is better name for cXYZ? joint_frequency_table?
+    cXYZ = np.array(observed_counts).reshape(*[d[1] for d in domains])
+
+
+    # compute the marginal counts
+    marginal_counts = np.meshgrid(*[cXYZ.sum(axis=i) for i in range(len(variables))])
+
+
+    # now normalize into probability mass functions
+    ## _pXY, [_pX, _pY, _pZ, ...] = [cXYZ/N, cX/N, cY/N, cZ/N]
+    # TODO are these appropriate names?
+    joint_prob_mass_fn, *probability_mass_fns = [counts/N for counts in [cXYZ, *observed_counts]]
+    ## _pXpY = _pX * _pY * _pZ * ...
+    product_of_prob_mass_functions = reduce(lambda a,b: a*b, probability_mass_fns)
+
+
+    # get rid of the zero events (only in the joint is sufficient)
+    # 0 * log(0/[possibly zero]) := 0 for information
+    # this limit actually comes from the expectation definition of information
+    ## nonzeros = pXY != 0
+    nonzeros = joint_prob_mass_fn != 0
+    #
+    # TODO what does this general form (ie single_var_nonzeros) look like?
+    # ie does nonzeros_Z look like
+    # pZ[:, :, 0] or pZ[:, 0, 0]? The latter, correct?
+    # How do we do this programatically?
+    ## nonzeros_X = pX[0, :] != 0
+    ## nonzeros_Y = pY[:, 0] != 0
 
 
 def compute(X: list, Y: list, domain: list):
